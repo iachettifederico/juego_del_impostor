@@ -1,87 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego del Impostor</title>
-
+    
     <!-- Tailwind CSS desde CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <!-- Stimulus desde CDN -->
-    <script src="https://unpkg.com/@hotwired/stimulus/dist/stimulus.umd.js"></script>
-  </head>
-  <body class="bg-gray-100 min-h-screen p-4">
+    <script src="https://unpkg.com/@hotwired/stimulus/dist/stimulus.js" type="module"></script>
+    
+    <!-- Nuestro controlador -->
+    <script src="js/stimulus.js" type="module"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
     <div data-controller="game" class="container mx-auto max-w-md">
-      <!-- Configuración inicial -->
-      <div data-game-target="configScreen" class="bg-white rounded-lg shadow p-6">
-        <h1 class="text-2xl font-bold text-center mb-6">¡Juego del Impostor! 🕵️‍♀️</h1>
-        <div class="space-y-4">
-          <label class="block text-lg">
-            ¿Cuántos jugadores? (mínimo 3)
-            <input
-              type="number"
-              data-game-target="playerCount"
-              data-action="change->game#validatePlayerCount"
-              min="3"
-              value="4"
-              class="mt-2 w-full text-center text-xl p-2 border rounded"
+        <!-- Configuración inicial -->
+        <div data-game-target="configScreen" class="bg-white rounded-lg shadow p-6">
+            <h1 class="text-2xl font-bold text-center mb-6">¡Juego del Impostor! 🕵️‍♀️</h1>
+            <div class="space-y-4">
+                <label class="block text-lg">
+                    ¿Cuántos jugadores? (mínimo 3)
+                    <input 
+                        type="number" 
+                        data-game-target="playerCount"
+                        data-action="change->game#validatePlayerCount"
+                        min="3" 
+                        value="4"
+                        class="mt-2 w-full text-center text-xl p-2 border rounded"
+                    >
+                </label>
+                <button 
+                    data-action="game#startGame" 
+                    data-game-target="startButton"
+                    class="w-full bg-blue-500 text-white text-xl p-6 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                >
+                    ¡Comenzar!
+                </button>
+            </div>
+            
+            <div class="mt-8 space-y-4 text-gray-600">
+                <h2 class="text-lg font-bold text-center">¿Cómo se juega? 🤔</h2>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Se necesitan al menos 3 jugadores para jugar (con grupos muy grandes el juego puede durar más)</li>
+                    <li>El juego elige una palabra secreta y un impostor al azar</li>
+                    <li>Por turnos, cada jugador debe hacer click en su número</li>
+                    <li>Los jugadores normales verán la palabra secreta</li>
+                    <li>El impostor solo sabrá que es el impostor</li>
+                    <li>¡A conversar! Los jugadores discuten sobre la palabra</li>
+                    <li>El impostor debe intentar adivinar la palabra</li>
+                    <li>Los demás deben descubrir quién es el impostor</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Selección de jugador -->
+        <div data-game-target="selectionScreen" class="hidden bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-center mb-4">¿Qué jugador sos?</h2>
+            <div data-game-target="playerButtons" class="grid grid-cols-2 gap-4">
+                <!-- Los botones se generan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Revelación de rol -->
+        <div data-game-target="revelationScreen" class="hidden bg-white rounded-lg shadow p-6 text-center">
+            <h2 data-game-target="playerTitle" class="text-xl font-bold mb-4"></h2>
+            <p data-game-target="roleText" class="text-2xl font-bold mb-8"></p>
+            <button 
+                data-action="game#continueGame" 
+                class="w-full bg-blue-500 text-white text-xl p-6 rounded-lg font-bold hover:bg-blue-600 transition-colors"
             >
-          </label>
-          <button
-            data-action="game#startGame"
-            data-game-target="startButton"
-            class="w-full bg-blue-500 text-white text-xl p-6 rounded-lg font-bold hover:bg-blue-600 transition-colors"
-          >
-            ¡Comenzar!
-          </button>
+                Listo, entendí
+            </button>
         </div>
 
-        <div class="mt-8 space-y-4 text-gray-600">
-          <h2 class="text-lg font-bold text-center">¿Cómo se juega? 🤔</h2>
-          <ol class="list-decimal list-inside space-y-2">
-            <li>Se necesitan al menos 3 jugadores para jugar (con grupos muy grandes el juego puede durar más)</li>
-            <li>El juego elige una palabra secreta y un impostor al azar</li>
-            <li>Por turnos, cada jugador debe hacer click en su número</li>
-            <li>Los jugadores normales verán la palabra secreta</li>
-            <li>El impostor solo sabrá que es el impostor</li>
-            <li>¡A conversar! Los jugadores discuten sobre la palabra</li>
-            <li>El impostor debe intentar adivinar la palabra</li>
-            <li>Los demás deben descubrir quién es el impostor</li>
-          </ol>
+        <!-- Final del juego -->
+        <div data-game-target="finalScreen" class="hidden bg-white rounded-lg shadow p-6 text-center">
+            <h2 class="text-xl font-bold mb-4">¡Todos vieron su rol! 🎮</h2>
+            <p class="mb-8 text-lg">Es momento de discutir y encontrar al impostor...</p>
+            <button 
+                data-action="game#revealImpostor" 
+                class="w-full bg-blue-500 text-white text-xl p-6 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+            >
+                Revelar quién era el impostor
+            </button>
         </div>
-      </div>
 
-      <!-- El resto del HTML sigue igual... -->
+        <!-- Revelación del impostor -->
+        <div data-game-target="impostorScreen" class="hidden bg-white rounded-lg shadow p-6 text-center">
+            <h2 class="text-xl font-bold mb-4">¡Fin del juego! 🎯</h2>
+            <p data-game-target="impostorReveal" class="text-4xl font-bold mb-4 text-red-600"></p>
+            <p data-game-target="secretWordReveal" class="mb-8 text-3xl font-bold text-green-600"></p>
+            <button 
+              data-action="game#resetGame" 
+              class="w-full bg-blue-500 text-white text-xl p-6 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+            >
+              Jugar otra vez
+            </button>
+        </div>
     </div>
-
-    <script>
-     // Lista de palabras posibles
-     const PALABRAS = [
-       'unicornio', 'gatito', 'pizza', 'tablet', 'mochila',
-       'helado', 'peluche', 'bicicleta', 'patineta', 'lápices'
-     ];
-
-     // Controlador del juego
-     (() => {
-       const application = Stimulus.Application.start();
-
-       application.register("game", class extends Stimulus.Controller {
-         static targets = [
-           "configScreen", "selectionScreen", "revelationScreen",
-           "finalScreen", "impostorScreen", "playerCount",
-           "startButton", "playerButtons", "playerTitle",
-           "roleText", "impostorReveal", "secretWordReveal"
-         ];
-
-         connect() {
-           this.resetGame();
-         }
-
-         // Resto de los métodos del controlador...
-         // [El código del controlador sigue igual]
-       });
-     })();
-    </script>
-  </body>
+</body>
 </html>
