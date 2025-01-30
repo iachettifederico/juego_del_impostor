@@ -84,53 +84,56 @@ const PALABRAS = [
 ];
 
 export default class extends Controller {
-  static targets = [
-    "configScreen", "selectionScreen", "revelationScreen",
-    "finalScreen", "impostorScreen", "playerCount",
-    "startButton", "playerButtons", "playerTitle",
-    "roleText", "impostorReveal", "secretWordReveal"
-  ];
+    static targets = [
+        "configScreen", "selectionScreen", "revelationScreen",
+        "finalScreen", "impostorScreen", "playerCount",
+        "startButton", "playerButtons", "playerTitle",
+        "roleText", "impostorReveal", "secretWordReveal"
+    ];
 
-  connect() {
-    this.resetGame();
-  }
-
-  resetGame() {
-    this.gameState = {
-      players: [],
-      remainingPlayers: [],
-      seenPlayers: [],
-      secretWord: '',
-      impostor: null,
-      currentPlayer: null
-    };
-
-    this.showScreen('configScreen');
-  }
-
-  validatePlayerCount(event) {
-    const count = parseInt(event.target.value);
-    if (count < 3) {
-      event.target.value = 3;
-    } else if (count > 10) {
-      event.target.value = 10;
+    connect() {
+        this.resetGame();
     }
-  }
 
-  startGame() {
-    const playerCount = parseInt(this.playerCountTarget.value);
-    this.gameState.players = Array.from({length: playerCount}, (_, i) => i + 1);
-    this.gameState.remainingPlayers = [...this.gameState.players];
-    this.gameState.secretWord = PALABRAS[Math.floor(Math.random() * PALABRAS.length)];
-    this.gameState.impostor = this.gameState.players[Math.floor(Math.random() * playerCount)];
+    resetGame() {
+        this.gameState = {
+            players: [],
+            remainingPlayers: [],
+            seenPlayers: [],
+            secretWord: '',
+            impostor: null,
+            currentPlayer: null
+        };
 
-    this.updatePlayerButtons();
-    this.showScreen('selectionScreen');
-  }
+        this.showScreen('configScreen');
+    }
 
-  updatePlayerButtons() {
-    this.playerButtonsTarget.innerHTML = this.gameState.remainingPlayers
-      .map(player => `
+    validatePlayerCount(event) {
+        const count = parseInt(event.target.value);
+        if (count < 3) {
+            event.target.value = 3;
+        }
+    }
+
+    startGame() {
+        const playerCount = parseInt(this.playerCountTarget.value);
+
+        if (playerCount < 3) {
+            alert('Se necesitan al menos 3 jugadores para jugar');
+            return;
+        }
+        this.gameState.players = Array.from({length: playerCount}, (_, i) => i + 1);
+        this.gameState.remainingPlayers = [...this.gameState.players];
+        this.gameState.secretWord = PALABRAS[Math.floor(Math.random() * PALABRAS.length)];
+        this.gameState.impostor = this.gameState.players[Math.floor(Math.random() * playerCount)];
+
+        this.updatePlayerButtons();
+        this.showScreen('selectionScreen');
+    }
+
+    updatePlayerButtons() {
+        this.playerButtonsTarget.innerHTML = this.gameState.remainingPlayers
+            .map(player => `
                 <button
                     data-action="game#selectPlayer"
                     data-player="${player}"
@@ -139,49 +142,49 @@ export default class extends Controller {
                     Jugador ${player}
                 </button>
             `).join('');
-  }
-
-  selectPlayer(event) {
-    const player = parseInt(event.currentTarget.dataset.player);
-    this.gameState.currentPlayer = player;
-    this.gameState.remainingPlayers = this.gameState.remainingPlayers.filter(p => p !== player);
-
-    this.playerTitleTarget.textContent = `¡Hola Jugador ${player}!`;
-
-    if (player === this.gameState.impostor) {
-      this.roleTextTarget.textContent = "¡Sos el impostor! 🤫";
-    } else {
-      this.roleTextTarget.innerHTML = `La palabra secreta es: <span class="text-4xl font-bold text-green-600">${this.gameState.secretWord}</span>`;
     }
 
-    this.showScreen('revelationScreen');
-  }
+    selectPlayer(event) {
+        const player = parseInt(event.currentTarget.dataset.player);
+        this.gameState.currentPlayer = player;
+        this.gameState.remainingPlayers = this.gameState.remainingPlayers.filter(p => p !== player);
 
-  continueGame() {
-    this.gameState.seenPlayers.push(this.gameState.currentPlayer);
+        this.playerTitleTarget.textContent = `¡Hola Jugador ${player}!`;
 
-    if (this.gameState.remainingPlayers.length > 0) {
-      this.updatePlayerButtons();
-      this.showScreen('selectionScreen');
-    } else {
-      this.showScreen('finalScreen');
+        if (player === this.gameState.impostor) {
+            this.roleTextTarget.textContent = "¡Sos el impostor! 🤫";
+        } else {
+            this.roleTextTarget.innerHTML = `La palabra secreta es: <span class="text-4xl font-bold text-green-600">${this.gameState.secretWord}</span>`;
+        }
+
+        this.showScreen('revelationScreen');
     }
-  }
 
-  revealImpostor() {
-    this.impostorRevealTarget.innerHTML = `El impostor era el <span class="text-4xl font-bold text-red-600">Jugador ${this.gameState.impostor}</span>`;
-    this.secretWordRevealTarget.innerHTML = `La palabra secreta era: <span class="text-3xl font-bold text-green-600">${this.gameState.secretWord}</span>`;
-    this.showScreen('impostorScreen');
-  }
+    continueGame() {
+        this.gameState.seenPlayers.push(this.gameState.currentPlayer);
 
-  showScreen(screenName) {
-    const screens = [
-      'configScreen', 'selectionScreen', 'revelationScreen',
-      'finalScreen', 'impostorScreen'
-    ];
+        if (this.gameState.remainingPlayers.length > 0) {
+            this.updatePlayerButtons();
+            this.showScreen('selectionScreen');
+        } else {
+            this.showScreen('finalScreen');
+        }
+    }
 
-    screens.forEach(screen => {
-      this[`${screen}Target`].classList.toggle('hidden', screen !== screenName);
-    });
-  }
+    revealImpostor() {
+        this.impostorRevealTarget.innerHTML = `El impostor era el <span class="text-4xl font-bold text-red-600">Jugador ${this.gameState.impostor}</span>`;
+        this.secretWordRevealTarget.innerHTML = `La palabra secreta era: <span class="text-3xl font-bold text-green-600">${this.gameState.secretWord}</span>`;
+        this.showScreen('impostorScreen');
+    }
+
+    showScreen(screenName) {
+        const screens = [
+            'configScreen', 'selectionScreen', 'revelationScreen',
+            'finalScreen', 'impostorScreen'
+        ];
+
+        screens.forEach(screen => {
+            this[`${screen}Target`].classList.toggle('hidden', screen !== screenName);
+        });
+    }
 }

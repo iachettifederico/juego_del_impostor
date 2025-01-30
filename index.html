@@ -18,13 +18,12 @@
         <h1 class="text-2xl font-bold text-center mb-6">¡Juego del Impostor! 🕵️‍♀️</h1>
         <div class="space-y-4">
           <label class="block text-lg">
-            ¿Cuántos jugadores? (3-10)
+            ¿Cuántos jugadores? (mínimo 3)
             <input
               type="number"
               data-game-target="playerCount"
               data-action="change->game#validatePlayerCount"
               min="3"
-              max="10"
               value="4"
               class="mt-2 w-full text-center text-xl p-2 border rounded"
             >
@@ -41,7 +40,7 @@
         <div class="mt-8 space-y-4 text-gray-600">
           <h2 class="text-lg font-bold text-center">¿Cómo se juega? 🤔</h2>
           <ol class="list-decimal list-inside space-y-2">
-            <li>Entre 3 y 10 jugadores pueden participar</li>
+            <li>Se necesitan al menos 3 jugadores para jugar (con grupos muy grandes el juego puede durar más)</li>
             <li>El juego elige una palabra secreta y un impostor al azar</li>
             <li>Por turnos, cada jugador debe hacer click en su número</li>
             <li>Los jugadores normales verán la palabra secreta</li>
