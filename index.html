@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego del Impostor</title>
-    
+
     <!-- Tailwind CSS desde CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Stimulus desde CDN (versión UMD) -->
-    <script src="https://unpkg.com/@hotwired/stimulus@3.2.2/dist/stimulus.umd.js"></script>
-    
-    <!-- Nuestro código -->
-    <script src="js/controllers/game_controller.js"></script>
-    <script src="js/stimulus.js"></script>
+
+    <!-- Stimulus desde CDN -->
+    <script src="https://unpkg.com/@hotwired/stimulus/dist/stimulus.js" type="module"></script>
+
+    <!-- Nuestro controlador -->
+    <script src="js/controllers/game_controller.js" type="module"></script>
+    <script src="js/stimulus.js" type="module"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
     <div data-controller="game" class="container mx-auto max-w-md">
